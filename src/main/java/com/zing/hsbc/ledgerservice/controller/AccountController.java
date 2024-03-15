@@ -19,7 +19,7 @@ public class AccountController {
     public Account createAccount(@RequestBody Account account) {
         // When an account is first registered or created in the system,
         // the default state is "Created". This status is used for accounts that have been initiated but are not yet active,
-        // often because they require further steps such as email verification, deposit of initial funds, or administrative approval.
+        // often because they require further steps such as email verification.
         account.setState(AccountState.CREATED);
         return accountService.createAccount(account);
     }

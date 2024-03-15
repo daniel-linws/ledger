@@ -3,6 +3,8 @@ package com.zing.hsbc.ledgerservice.notification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zing.hsbc.ledgerservice.entity.Transaction;
 import com.zing.hsbc.ledgerservice.entity.TransactionQuery;
+import com.zing.hsbc.ledgerservice.eventSource.TransactionClearEvent;
+import com.zing.hsbc.ledgerservice.eventSource.TransactionFailedEvent;
 import com.zing.hsbc.ledgerservice.helper.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,16 +21,9 @@ public class NotificationSender {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendProcessTransaction(List<Transaction> transactions) throws JsonProcessingException {
-        try {
-            String message = Utils.getIdFromTransaction(transactions);
-            kafkaTemplate.send(TOPIC_POSTING_PROCESS, message);
-            String json = Utils.getMapper().writeValueAsString(transactions);
-            kafkaTemplate.send(TOPIC_TRANSACTION_QUERY_CHANGED, json);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            throw ex;
-        }
+    public void sendProcessTransaction(List<Transaction> transactions) {
+        String ids = Utils.getIdFromTransaction(transactions);
+        kafkaTemplate.send(TOPIC_POSTING_PROCESS, ids);
     }
 
     public void sendClearTransaction(List<TransactionQuery> transactionQueries) throws JsonProcessingException {
@@ -43,6 +38,7 @@ public class NotificationSender {
     public void sendFailedTransaction(List<Transaction> transactions) {
         String json = Utils.getIdFromTransaction(transactions);
         kafkaTemplate.send(TOPIC_POSTING_FAILED, json);
+
     }
 
 //    public void sendBalanceChangedMsg(List<Transaction> transactions) {

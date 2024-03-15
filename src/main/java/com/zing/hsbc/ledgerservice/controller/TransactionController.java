@@ -31,8 +31,7 @@ public class TransactionController {
     private WalletService walletService;
     @Autowired
     private AccountService accountService;
-    @Autowired
-    NotificationSender notificationSender;
+
     @PostMapping("/createTransactions")
     public ResponseEntity<List<Transaction>> createTransactions(@RequestBody List<Transaction> transactions) throws JsonProcessingException {
         transactions.stream().forEach(transaction -> {
@@ -47,7 +46,6 @@ public class TransactionController {
             transaction.setCreationDate(LocalDateTime.now());
         });
         List<Transaction> savedTransactions = transactionService.createTransactions(transactions);
-        notificationSender.sendProcessTransaction(transactions);
         return ResponseEntity.ok(savedTransactions);
     }
 

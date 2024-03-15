@@ -11,7 +11,7 @@ public class Utils {
     private static ObjectMapper mapper;
     public static String getIdFromTransaction(List<Transaction> transactions) {
         return transactions.stream()
-                .map(transaction -> transaction.getId().toString())
+                .map(transaction -> transaction.getTransactionId().toString())
                 .collect(Collectors.joining(","));
     }
 
@@ -25,7 +25,7 @@ public class Utils {
 
     public static TransactionQuery createTransactionQueryFromTransactionAndWallets(Transaction transaction, Wallet sourceWallet, Wallet targetWallet, BigDecimal sourceBalanceBefore, BigDecimal targetBalanceBefore) {
         return TransactionQuery.builder()
-                .transactionId(transaction.getId())
+                .transactionId(transaction.getTransactionId())
                 .sourceWalletId(transaction.getSourceWalletId())
                 .targetWalletId(transaction.getTargetWalletId())
                 .asset(sourceWallet.getAsset())
