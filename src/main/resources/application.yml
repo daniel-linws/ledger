@@ -14,3 +14,9 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092
+      group-id: zing_consumer
+    producer:
+      bootstrap-servers: localhost:9092

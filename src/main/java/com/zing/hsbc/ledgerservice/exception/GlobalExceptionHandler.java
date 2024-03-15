@@ -19,8 +19,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseBody
-    public ErrorResponse handleResourceNotFoundExceptionn(ResourceNotFoundException ex) {
+    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
         return new ErrorResponse("RESOURCE_NOT_FOUND", ex.getMessage());
+    }
+
+    @ExceptionHandler(OperationForbiddenException.class)
+    @ResponseBody
+    public ErrorResponse handleOperationForbiddenException(OperationForbiddenException ex) {
+        return new ErrorResponse("OPERATION_FORBIDDEN", ex.getMessage());
     }
 
     // Define ErrorResponse class or use an existing error response structure

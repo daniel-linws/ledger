@@ -13,7 +13,7 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private BigDecimal balance ;
-    private String currency;
+    private String asset;
     private Long accountId;
 
 }

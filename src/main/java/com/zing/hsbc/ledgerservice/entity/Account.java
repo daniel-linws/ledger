@@ -1,4 +1,5 @@
 package com.zing.hsbc.ledgerservice.entity;
+import com.zing.hsbc.ledgerservice.state.AccountState;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,5 +15,7 @@ public class Account {
     private Long id;
     private String clientId;
     private String name;
+    @Enumerated(EnumType.STRING)
+    private AccountState state;
 }
 

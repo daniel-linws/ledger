@@ -1,4 +1,4 @@
-package com.zing.hsbc.ledgerservice;
+package com.zing.hsbc.ledgerservice.state;
 
 public enum TransactionState {
     PENDING,

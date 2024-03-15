@@ -1,4 +1,5 @@
 package com.zing.hsbc.ledgerservice.entity;
+
 import com.zing.hsbc.ledgerservice.state.TransactionState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,15 +15,18 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Transaction {
+public class TransactionQuery {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private BigDecimal amount;
-    private LocalDateTime transactionDate;
-    private LocalDateTime creationDate;
+    private Long transactionId;
     private Long sourceWalletId;
     private Long targetWalletId;
+    private BigDecimal sourceBalanceBefore;
+    private BigDecimal sourceBalanceAfter;
+    private BigDecimal targetBalanceBefore;
+    private BigDecimal targetBalanceAfter;
+    private String asset;
+    private LocalDateTime transactionDate;
+    private LocalDateTime creationDate;
     @Enumerated(EnumType.STRING)
     private TransactionState state;
 
