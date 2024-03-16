@@ -46,6 +46,7 @@ public class TransactionService {
         try {
             doprocessTransactions(transactions);
         } catch (Exception e) {
+            e.printStackTrace();
             handleErrorOccur(transactions);
         }
     }
@@ -86,6 +87,7 @@ public class TransactionService {
         // If all transactions are processed successfully, save the updated status
         transactionRepository.saveAll(transactions);
         notificationSender.sendClearTransaction(transactionQueries);
+        notificationSender.sendBalanceChangedMsg(transactions);
     }
 
     @Transactional
@@ -105,15 +107,6 @@ public class TransactionService {
             }
         });
     }
-
-    /**
-     * Calculates the balance of a wallet at a given timestamp by summing
-     * the credits and debits up to that point.
-     *
-     * @param walletId  ID of the wallet
-     * @param timestamp The timestamp up to which to calculate the balance
-     * @return The calculated balance
-     */
 
     @Transactional
     public List<Transaction> createTransactions(List<Transaction> transactions) {

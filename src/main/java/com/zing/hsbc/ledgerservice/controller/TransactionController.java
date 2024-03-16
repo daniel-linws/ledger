@@ -32,6 +32,7 @@ public class TransactionController {
 
     @PostMapping("/createTransactions")
     public ResponseEntity<List<Transaction>> createTransactions(@RequestBody List<Transaction> transactions) throws JsonProcessingException {
+        LocalDateTime now = LocalDateTime.now();
         transactions.stream().forEach(transaction -> {
             //only active account state can execute the transaction
             Wallet targetWallet = walletService.getWallet(transaction.getTargetWalletId()).orElseThrow(() -> new ResourceNotFoundException("Wallet not found for id :: " + transaction.getTargetWalletId()));
@@ -41,14 +42,11 @@ public class TransactionController {
             if (!AccountState.ACTIVE.equals(targetAccount.getState()) || !AccountState.ACTIVE.equals(sourceAccount.getState()))
                 throw new OperationForbiddenException("Account State is not active");
             transaction.setState(TransactionState.PENDING);
-            transaction.setCreationDate(LocalDateTime.now());
+            transaction.setCreationDate(now);
         });
         List<Transaction> savedTransactions = transactionService.createTransactions(transactions);
         return ResponseEntity.ok(savedTransactions);
     }
-
-
-    //2024-03-15T10:30:00
 
     @PutMapping("/{updateTransaction}")
     public ResponseEntity<Transaction> updateTransaction(@PathVariable Long transactionId, @Valid @RequestBody TransactionUpdateDto updateDTO) {

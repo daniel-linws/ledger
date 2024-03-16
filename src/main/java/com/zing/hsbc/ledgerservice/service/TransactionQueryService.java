@@ -38,5 +38,9 @@ public class TransactionQueryService {
         return transactionQueryRepository.findWalletBalanceBeforeTimestamp(walletId, timestamp);
     }
 
+    public List<TransactionQuery> findAllById(List<Long> transactionIds){
+        return transactionQueryRepository.findAllById(transactionIds);
+    }
+
 }
 

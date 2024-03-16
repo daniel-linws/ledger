@@ -9,6 +9,7 @@ import com.zing.hsbc.ledgerservice.helper.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,23 +42,11 @@ public class NotificationSender {
 
     }
 
-//    public void sendBalanceChangedMsg(List<Transaction> transactions) {
-//        try {
-//            transactions.stream().forEach(transaction -> {
-//                BalanceChangedMsg balanceChangedMsg = new BalanceChangedMsg(transaction.getId(),
-//                        transaction.getAmount().negate(),
-//                        transaction.getTransactionDate(),
-//                        transaction.getSourceWalletId());
-//                kafkaTemplate.send(TOPIC_BALANCE_CHANGED, Utils.getMapper().writeValueAsString(balanceChangedMsg));
-//                balanceChangedMsg = new BalanceChangedMsg(transaction.getId(),
-//                        transaction.getAmount(),
-//                        transaction.getTransactionDate(),
-//                        transaction.getTargetWalletId());
-//                kafkaTemplate.send(TOPIC_BALANCE_CHANGED, Utils.getMapper().writeValueAsString(balanceChangedMsg));
-//            });
-//        } catch (Exception ex) {
-//            ex.printStackTrace();
-//            throw ex;
-//        }
-//    }
+    public void sendBalanceChangedMsg(List<Transaction> transactions) {
+        String ids = transactions.stream()
+                .map(transaction -> transaction.getTransactionId().toString())
+                .collect(Collectors.joining(","));
+        kafkaTemplate.send(TOPIC_BALANCE_CHANGED, ids);
+
+    }
 }
