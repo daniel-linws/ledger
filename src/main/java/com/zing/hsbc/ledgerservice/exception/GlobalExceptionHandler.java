@@ -2,11 +2,9 @@ package com.zing.hsbc.ledgerservice.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -27,6 +25,12 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public ErrorResponse handleOperationForbiddenException(OperationForbiddenException ex) {
         return new ErrorResponse("OPERATION_FORBIDDEN", ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ErrorResponse handleException(Exception ex) {
+        return new ErrorResponse("GENERAL_EXCEPTION", ex.getMessage());
     }
 
     // Define ErrorResponse class or use an existing error response structure

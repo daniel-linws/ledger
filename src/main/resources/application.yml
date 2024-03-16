@@ -20,3 +20,7 @@ spring:
       group-id: zing_consumer
     producer:
       bootstrap-servers: localhost:9092
+
+logging:
+  file:
+    name: zing.log

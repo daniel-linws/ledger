@@ -1,4 +1,5 @@
 package com.zing.hsbc.ledgerservice.controller;
+
 import com.zing.hsbc.ledgerservice.dto.AccountUpdateDto;
 import com.zing.hsbc.ledgerservice.entity.Account;
 import com.zing.hsbc.ledgerservice.exception.OperationForbiddenException;
@@ -8,6 +9,7 @@ import com.zing.hsbc.ledgerservice.state.AccountState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -18,9 +20,6 @@ public class AccountController {
 
     @PostMapping("/create")
     public Account createAccount(@RequestBody Account account) {
-        // When an account is first registered or created in the system,
-        // the default state is "Created". This status is used for accounts that have been initiated but are not yet active,
-        // often because they require further steps such as email verification.
         account.setState(AccountState.CREATED);
         return accountService.createOrUpdateAccount(account);
     }

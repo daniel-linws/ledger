@@ -14,18 +14,18 @@ import java.util.List;
 public class ClientController {
 
     @Autowired
-    private ClientRepository clientRepo;
+    private ClientRepository clientRepository;
     @Autowired
     private WalletSubscriptionService subscriptionService;
     @PostMapping
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
-        Client savedClient = clientRepo.save(client);
+        Client savedClient = clientRepository.save(client);
         return ResponseEntity.ok(savedClient);
     }
 
     @GetMapping
     public ResponseEntity<List<Client>> getAllEntities() {
-        List<Client> entities = clientRepo.findAll();
+        List<Client> entities = clientRepository.findAll();
         return ResponseEntity.ok(entities);
     }
     @PostMapping("/wallet/subscribe")

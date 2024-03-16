@@ -15,15 +15,12 @@ public class AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
-
     public Account createOrUpdateAccount(Account account) {
         return accountRepository.save(account);
     }
-
     public Optional<Account> getAccountById(Long id) {
         return accountRepository.findById(id);
     }
-
     public List<Account> getAllAccounts() {
         return accountRepository.findAll();
     }

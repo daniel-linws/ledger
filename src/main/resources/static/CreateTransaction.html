@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create Transaction</title>
+<script>
+    function submitTransaction() {
+        event.preventDefault(); // Prevent the form from submitting the traditional way
+
+        var amount = document.getElementById("amount").value;
+        var sourceWalletId = document.getElementById("sourceWalletId").value;
+        var targetWalletId = document.getElementById("targetWalletId").value;
+
+        // Create the data object with input values
+        var data = JSON.stringify([{
+            "amount": amount,
+            "sourceWalletId": sourceWalletId,
+            "targetWalletId": targetWalletId
+        }]);
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8080/api/transactions/createTransactions", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Parse and prettify the JSON response
+                var responseObj = JSON.parse(xhr.responseText);
+                var prettyJson = JSON.stringify(responseObj, null, 2); // Indent with 2 spaces
+                document.getElementById("response").textContent = prettyJson;
+            } else {
+                document.getElementById("response").textContent = 'Transaction failed: ' + xhr.statusText;
+            }
+        };
+
+        xhr.send(data);
+    }
+</script>
+</head>
+<body>
+
+<h2>Create Transaction</h2>
+<form id="transactionForm" onsubmit="submitTransaction()">
+    <label for="amount">Amount:</label><br>
+    <input type="text" id="amount" name="amount"><br>
+    <label for="sourceWalletId">Source Wallet ID:</label><br>
+    <input type="text" id="sourceWalletId" name="sourceWalletId"><br>
+    <label for="targetWalletId">Target Wallet ID:</label><br>
+    <input type="text" id="targetWalletId" name="targetWalletId"><br><br>
+    <input type="submit" value="Submit">
+</form>
+
+<!-- Display the prettified JSON response -->
+<pre id="response"></pre>
+
+</body>
+</html>
