@@ -14,15 +14,6 @@ public class Utils {
                 .map(transaction -> transaction.getTransactionId().toString())
                 .collect(Collectors.joining(","));
     }
-
-    public static ObjectMapper getMapper() {
-        if (mapper == null) {
-            mapper = new ObjectMapper();
-            mapper.registerModule(new JavaTimeModule());
-        }
-        return mapper;
-    }
-
     public static TransactionQuery createTransactionQueryFromTransactionAndWallets(Transaction transaction, Wallet sourceWallet, Wallet targetWallet, BigDecimal sourceBalanceBefore, BigDecimal targetBalanceBefore) {
         return TransactionQuery.builder()
                 .transactionId(transaction.getTransactionId())
@@ -37,5 +28,13 @@ public class Utils {
                 .creationDate(transaction.getCreationDate())
                 .transactionDate(transaction.getTransactionDate())
                 .build();
+    }
+
+    public static ObjectMapper getMapper() {
+        if (mapper == null) {
+            mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+        }
+        return mapper;
     }
 }

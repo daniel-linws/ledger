@@ -11,7 +11,10 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.zing.hsbc.ledgerservice.notification.KafkaTopic.TOPIC_TRANSACTION_QUERY_CHANGED;
 
@@ -29,6 +32,10 @@ public class TransactionQueryService {
         transactionQueries.stream().forEach(transactionQuery -> {
             transactionQueryRepository.save(transactionQuery);
         });
+    }
+
+    public Optional<BigDecimal> findWalletBalanceBeforeTimestamp(Long walletId, LocalDateTime timestamp) {
+        return transactionQueryRepository.findWalletBalanceBeforeTimestamp(walletId, timestamp);
     }
 
 }

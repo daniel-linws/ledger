@@ -1,4 +1,5 @@
 package com.zing.hsbc.ledgerservice.controller;
+import com.zing.hsbc.ledgerservice.dto.AccountUpdateDto;
 import com.zing.hsbc.ledgerservice.entity.Account;
 import com.zing.hsbc.ledgerservice.exception.OperationForbiddenException;
 import com.zing.hsbc.ledgerservice.exception.ResourceNotFoundException;
@@ -48,12 +49,14 @@ public class AccountController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Account> updateAccount(@PathVariable(value = "id") Long accountId,
-                                                 @RequestBody Account accountDetails) {
+                                                 @RequestBody AccountUpdateDto dto) {
         Account account = accountService.getAccountById(accountId).orElseThrow(() -> new ResourceNotFoundException("Account not found for this id :: " + accountId));
         //the account info can't be updated if the state is CLOSED
         if (AccountState.CLOSED.equals(account.getState()))
             throw new OperationForbiddenException("Account state is closed for id :: " + accountId);
-        final Account updatedAccount = accountService.updateAccount(accountId, accountDetails);
+        account.setName(dto.getName());
+        account.setState(dto.getState());
+        final Account updatedAccount = accountService.createOrUpdateAccount(account);
         return ResponseEntity.ok(updatedAccount);
     }
 

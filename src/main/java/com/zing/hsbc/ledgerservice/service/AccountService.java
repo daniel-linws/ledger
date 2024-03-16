@@ -13,16 +13,10 @@ import java.util.Optional;
 @Service
 public class AccountService {
 
-    private final AccountRepository accountRepository;
-
     @Autowired
-    public AccountService(AccountRepository accountRepository) {
-        this.accountRepository = accountRepository;
-    }
+    private AccountRepository accountRepository;
 
-    @Transactional
-    public Account createAccount(Account account) {
-        // Add any business logic here if necessary
+    public Account createOrUpdateAccount(Account account) {
         return accountRepository.save(account);
     }
 
@@ -34,19 +28,6 @@ public class AccountService {
         return accountRepository.findAll();
     }
 
-    public Account updateAccount(Long id, Account accountDetails) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found for this id :: " + id));
-        account.setName(accountDetails.getName());
-        account.setClientId(accountDetails.getClientId());
-        final Account updatedAccount = accountRepository.save(account);
-        return updatedAccount;
-    }
 
-    public void deleteAccount(Long accountId) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found for this id :: " + accountId));
-        accountRepository.delete(account);
-    }
 }
 

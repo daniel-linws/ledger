@@ -1,10 +1,12 @@
 package com.zing.hsbc.ledgerservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.zing.hsbc.ledgerservice.dto.TransactionUpdateDto;
 import com.zing.hsbc.ledgerservice.entity.TransactionQuery;
 import com.zing.hsbc.ledgerservice.eventSource.TransactionClearEvent;
 import com.zing.hsbc.ledgerservice.eventSource.TransactionCreatedEvent;
 import com.zing.hsbc.ledgerservice.eventSource.TransactionFailedEvent;
+import com.zing.hsbc.ledgerservice.exception.OperationForbiddenException;
 import com.zing.hsbc.ledgerservice.helper.Utils;
 import com.zing.hsbc.ledgerservice.state.TransactionState;
 import com.zing.hsbc.ledgerservice.entity.Transaction;
@@ -16,7 +18,6 @@ import com.zing.hsbc.ledgerservice.repo.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -113,11 +114,6 @@ public class TransactionService {
      * @param timestamp The timestamp up to which to calculate the balance
      * @return The calculated balance
      */
-    public BigDecimal getWalletBalanceAtTimestamp(Long walletId, LocalDateTime timestamp) {
-        BigDecimal credits = transactionRepository.sumCreditsUpTo(walletId, timestamp);
-        BigDecimal debits = transactionRepository.sumDebitsUpTo(walletId, timestamp);
-        return credits.subtract(debits);
-    }
 
     @Transactional
     public List<Transaction> createTransactions(List<Transaction> transactions) {
@@ -134,4 +130,14 @@ public class TransactionService {
         return updatedTransactions;
     }
 
+    public Transaction updateTransactionIfPending(Long transactionID, TransactionUpdateDto dto) {
+        Transaction transaction = transactionRepository.findById(transactionID).orElseThrow(() -> new ResourceNotFoundException("Transaction not found for this id :: " + transactionID));
+        if (transaction.getState().equals(TransactionState.PENDING)) {
+            transaction.setAmount(dto.getAmount());
+            transaction.setTargetWalletId(dto.getTargetWalletId());
+            transaction.setSourceWalletId(dto.getSourceWalletId());
+            transactionRepository.save(transaction);
+            return transaction;
+        }else throw new OperationForbiddenException("Update transaction forbidden due to pending state for id ::" + transactionID);
+    }
 }

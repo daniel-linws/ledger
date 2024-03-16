@@ -1,17 +1,14 @@
 package com.zing.hsbc.ledgerservice.entity;
-import com.zing.hsbc.ledgerservice.state.AccountState;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
 @Data
-public class Account {
+public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String clientId;
     private String name;
-    @Enumerated(EnumType.STRING)
-    private AccountState state;
 }
 
