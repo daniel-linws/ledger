@@ -9,7 +9,7 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String clientId;
+    private Long clientId;
     private String name;
     @Enumerated(EnumType.STRING)
     private AccountState state;

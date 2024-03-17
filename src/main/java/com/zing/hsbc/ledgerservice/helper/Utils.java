@@ -1,16 +1,14 @@
 package com.zing.hsbc.ledgerservice.helper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.zing.hsbc.ledgerservice.entity.Transaction;
 import com.zing.hsbc.ledgerservice.entity.TransactionQuery;
 import com.zing.hsbc.ledgerservice.entity.Wallet;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 public class Utils {
@@ -31,6 +29,20 @@ public class Utils {
                 .sourceBalanceAfter(sourceWallet.getBalance())
                 .targetBalanceAfter(targetWallet.getBalance())
                 .state(transaction.getState())
+                .amount(transaction.getAmount())
+                .creationDate(transaction.getCreationDate())
+                .transactionDate(transaction.getTransactionDate())
+                .build();
+    }
+
+
+    public static TransactionQuery createTransactionQueryFromTransaction(Transaction transaction) {
+        return TransactionQuery.builder()
+                .transactionId(transaction.getTransactionId())
+                .sourceWalletId(transaction.getSourceWalletId())
+                .targetWalletId(transaction.getTargetWalletId())
+                .state(transaction.getState())
+                .amount(transaction.getAmount())
                 .creationDate(transaction.getCreationDate())
                 .transactionDate(transaction.getTransactionDate())
                 .build();

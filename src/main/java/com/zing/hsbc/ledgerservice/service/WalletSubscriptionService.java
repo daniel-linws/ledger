@@ -28,5 +28,9 @@ public class WalletSubscriptionService {
     public List<WalletSubscription> findAllByWalletId(Long walletId){
         return subscriptionRepository.findAllByWalletId(walletId);
     }
+
+    public List<WalletSubscription> findAll(){
+        return subscriptionRepository.findAll();
+    }
 }
 

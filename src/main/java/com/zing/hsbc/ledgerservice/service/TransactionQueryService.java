@@ -2,9 +2,8 @@ package com.zing.hsbc.ledgerservice.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.zing.hsbc.ledgerservice.entity.Transaction;
-import com.zing.hsbc.ledgerservice.helper.Utils;
 import com.zing.hsbc.ledgerservice.entity.TransactionQuery;
+import com.zing.hsbc.ledgerservice.helper.Utils;
 import com.zing.hsbc.ledgerservice.repo.TransactionQueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -38,8 +37,16 @@ public class TransactionQueryService {
         return transactionQueryRepository.findWalletBalanceBeforeTimestamp(walletId, timestamp);
     }
 
-    public List<TransactionQuery> findAllById(List<Long> transactionIds){
+    public List<TransactionQuery> findAllById(List<Long> transactionIds) {
         return transactionQueryRepository.findAllById(transactionIds);
+    }
+
+    public List<TransactionQuery> findAllByOrderByIdAsc() {
+        return transactionQueryRepository.findAllByOrderByTransactionIdDesc();
+    }
+
+    public TransactionQuery save(TransactionQuery transactionQuery) {
+        return transactionQueryRepository.save(transactionQuery);
     }
 
 }

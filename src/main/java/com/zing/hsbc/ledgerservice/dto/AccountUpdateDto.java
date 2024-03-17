@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Data
 public class AccountUpdateDto {
+    private Long id;
     private String name;
     @Enumerated(EnumType.STRING)
     private AccountState state;

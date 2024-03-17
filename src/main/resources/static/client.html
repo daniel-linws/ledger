@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client Management</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-container {
+            width: 48%;
+        }
+        .response, .tables-container {
+            clear: both;
+            padding-top: 20px;
+        }
+    </style>
+    <script>
+        function handleClientUpdate() {
+            event.preventDefault();
+            var id = document.getElementById("update-id").value;
+            var name = document.getElementById("update-name").value;
+            var data = JSON.stringify({ id: id, name: name });
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/api/client/update", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = function () { displayResponse(xhr); };
+            xhr.send(data);
+        }
+
+        function handleSubscription(action) {
+            event.preventDefault();
+            var clientId = document.getElementById("subscription-clientId").value;
+            var walletId = document.getElementById("subscription-walletId").value;
+            var data = JSON.stringify({ clientId: clientId, walletId: walletId });
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", `http://localhost:8080/api/client/wallet/${action}`, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onload = function () {
+                displayResponse(xhr);
+            };
+            xhr.send(data);
+        }
+
+        function displayResponse(xhr) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                loadSubscriptions();
+                loadClients();
+                if(xhr.responseText)
+                    document.getElementById("responseBody").textContent = JSON.stringify(JSON.parse(xhr.responseText), null, 2);
+            } else {
+                document.getElementById("responseBody").textContent = "Failed to process request: " + xhr.statusText;
+            }
+        }
+
+        function loadSubscriptions() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/client/subscription/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var subscriptions = JSON.parse(xhr.responseText);
+                    var html = "<table border='1'><tr><th>Client ID</th><th>Wallet ID</th></tr>";
+                    subscriptions.forEach(function(subscription) {
+                        html += `<tr><td>${subscription.clientId}</td><td>${subscription.walletId}</td></tr>`;
+                    });
+                    html += "</table>";
+                    document.getElementById("subscriptionsTable").innerHTML = html;
+                } else {
+                    document.getElementById("subscriptionsTable").textContent = "Failed to load subscriptions";
+                }
+            };
+            xhr.send();
+        }
+        function loadClients() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/client/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var clients = JSON.parse(xhr.responseText);
+                    var html = "<table border='1'><tr><th>Client ID</th><th>Client Name</th></tr>";
+                    clients.forEach(function(client) {
+                        html += "<tr><td>" + client.id + "</td><td>" + client.name + "</td></tr>";
+                    });
+                    html += "</table>";
+                    document.getElementById("clientsTable").innerHTML = html;
+                } else {
+                    document.getElementById("clientsTable").textContent = "Failed to load clients";
+                }
+            };
+            xhr.send();
+        }
+        window.onload = function() {
+            loadSubscriptions();
+            loadClients();
+        };
+    </script>
+</head>
+<body>
+
+<h2>Client Management</h2>
+<div class="container">
+    <div class="form-container">
+        <h3>Update Client</h3>
+        <form onsubmit="handleClientUpdate()">
+            <label for="update-id">Client ID:</label><br>
+            <input type="text" id="update-id" name="id"><br>
+            <label for="update-name">Client Name:</label><br>
+            <input type="text" id="update-name" name="name"><br><br>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div class="form-container">
+        <h3>Manage Subscription</h3>
+        <form>
+            <label for="subscription-clientId">Client ID:</label><br>
+            <input type="text" id="subscription-clientId" name="clientId"><br>
+            <label for="subscription-walletId">Wallet ID:</label><br>
+            <input type="text" id="subscription-walletId" name="walletId"><br><br>
+            <button type="button" onclick="handleSubscription('subscribe')">Subscribe</button>
+            <button type="button" onclick="handleSubscription('unsubscribe')">Unsubscribe</button>
+        </form>
+    </div>
+</div>
+
+<div class="response">
+    <h3>Response</h3>
+    <pre id="responseBody"></pre>
+</div>
+
+<h3>Clients</h3>
+<div id="clientsTable"></div>
+
+<div class="tables-container">
+    <h3>Subscriptions</h3>
+    <div id="subscriptionsTable"></div>
+</div>
+
+
+</body>
+</html>

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class EventStoreService {
@@ -22,4 +23,10 @@ public class EventStoreService {
         eventEntity.setTimestamp(LocalDateTime.now());
         eventRepository.save(eventEntity);
     }
+
+    public List<EventEntity> findAll(){
+        return eventRepository.findAllByOrderByIdDesc();
+    }
+
+
 }

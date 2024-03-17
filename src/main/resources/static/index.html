@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        .menu {
+            width: 200px;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+        .menu a {
+            display: block;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: black;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="menu">
+    <a href="transaction.html" target="contentFrame">Transaction</a>
+    <a href="wallet.html" target="contentFrame">Wallet</a>
+    <a href="account.html" target="contentFrame">Account</a>
+    <a href="client.html" target="contentFrame">Client</a>
+</div>
+
+<div class="content">
+    <!-- Set the src attribute to "transaction.html" to load it by default -->
+    <iframe name="contentFrame" src="transaction.html"></iframe>
+</div>
+
+</body>
+</html>

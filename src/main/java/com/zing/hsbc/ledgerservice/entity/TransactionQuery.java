@@ -1,5 +1,6 @@
 package com.zing.hsbc.ledgerservice.entity;
 
+import com.zing.hsbc.ledgerservice.state.AssetType;
 import com.zing.hsbc.ledgerservice.state.TransactionState;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,9 +25,11 @@ public class TransactionQuery {
     private BigDecimal sourceBalanceAfter;
     private BigDecimal targetBalanceBefore;
     private BigDecimal targetBalanceAfter;
-    private String asset;
+    @Enumerated(EnumType.STRING)
+    private AssetType asset;
     private LocalDateTime transactionDate;
     private LocalDateTime creationDate;
+    private BigDecimal amount;
     @Enumerated(EnumType.STRING)
     private TransactionState state;
 

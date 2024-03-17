@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Account Management</title>
+    <style>
+        .container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-container {
+            width: 45%;
+        }
+    </style>
+    <script>
+        function createAccount() {
+            event.preventDefault(); // Prevent form from submitting traditionally
+
+            var clientId = document.getElementById("create-clientId").value;
+            var name = document.getElementById("create-name").value;
+
+            var data = JSON.stringify({
+                clientId: clientId,
+                name: name
+            });
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/api/accounts/create", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onload = function () {
+                displayResponse(xhr);
+            };
+
+            xhr.send(data);
+        }
+
+        function updateAccount() {
+            event.preventDefault(); // Prevent form from submitting traditionally
+
+            var id = document.getElementById("update-id").value;
+            var name = document.getElementById("update-name").value;
+            var state = document.getElementById("update-state").value;
+
+            var data = JSON.stringify({
+                id: id,
+                name: name,
+                state: state
+            });
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("PUT", "http://localhost:8080/api/accounts/update", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onload = function () {
+                displayResponse(xhr);
+            };
+
+            xhr.send(data);
+        }
+
+        function displayResponse(xhr) {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                var responseText = JSON.stringify(JSON.parse(xhr.responseText), null, 2); // Prettify JSON response
+                document.getElementById("responseBody").textContent = responseText; // Display response
+                loadAccounts(); // Refresh accounts table
+                loadClients();
+            } else {
+                document.getElementById("responseBody").textContent = "Failed to process request: " + xhr.statusText;
+            }
+        }
+
+        function loadAccounts() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/accounts/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var accounts = JSON.parse(xhr.responseText);
+                    var table = "<table border='1'><thead><tr><th>Account ID</th><th>Client ID</th><th>Account Name</th><th>Account State</th></tr></thead><tbody>";
+                    accounts.forEach(account => {
+                        table += `<tr><td>${account.id}</td><td>${account.clientId}</td><td>${account.name}</td><td>${account.state}</td></tr>`;
+                    });
+                    table += "</tbody></table>";
+                    document.getElementById("accountsTable").innerHTML = table;
+                } else {
+                    document.getElementById("accountsTable").textContent = "Failed to load accounts";
+                }
+            };
+            xhr.send();
+        }
+
+        function loadClients() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/client/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var clients = JSON.parse(xhr.responseText);
+                    var html = "<table border='1'><tr><th>Client ID</th><th>Client Name</th></tr>";
+                    clients.forEach(function(client) {
+                        html += "<tr><td>" + client.id + "</td><td>" + client.name + "</td></tr>";
+                    });
+                    html += "</table>";
+                    document.getElementById("clientsTable").innerHTML = html;
+                } else {
+                    document.getElementById("clientsTable").textContent = "Failed to load clients";
+                }
+            };
+            xhr.send();
+        }
+
+        window.onload = function() {
+            loadAccounts();
+            loadClients();
+        };
+    </script>
+</head>
+<body>
+
+<h2>Account Management</h2>
+<div class="container">
+    <div class="form-container">
+        <h3>Create Account</h3>
+        <form onsubmit="createAccount()">
+            <label for="create-clientId">Client ID:</label><br>
+            <input type="text" id="create-clientId" name="clientId"><br>
+            <label for="create-name">Account Name:</label><br>
+            <input type="text" id="create-name" name="name"><br><br>
+            <button type="submit">Create</button>
+        </form>
+    </div>
+    <div class="form-container">
+        <h3>Update Account</h3>
+        <form onsubmit="updateAccount()">
+            <label for="update-id">Account ID:</label><br>
+            <input type="text" id="update-id" name="id"><br>
+            <label for="update-name">Account Name:</label><br>
+            <input type="text" id="update-name" name="name"><br>
+            <label for="update-state">Account State:</label><br>
+            <select id="update-state" name="state">
+                <option value="CREATED">CREATED</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="SUSPENDED">SUSPENDED</option>
+                <option value="FROZEN">FROZEN</option>
+                <option value="CLOSED">CLOSED</option>
+            </select><br><br>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+</div>
+
+<hr/>
+<!-- Placeholder to display the response -->
+<pre id="responseBody"></pre>
+
+<h3>Accounts</h3>
+<div id="accountsTable"></div>
+
+<h3>Clients</h3>
+<div id="clientsTable"></div>
+
+</body>
+</html>

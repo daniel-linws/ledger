@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wallet Transactions</title>
+    <script>
+        function submitTransaction() {
+            event.preventDefault();
+
+            var amount = document.getElementById("amount").value;
+            var sourceWalletId = document.getElementById("sourceWalletId").value;
+            var targetWalletId = document.getElementById("targetWalletId").value;
+
+            var data = JSON.stringify([{
+                "amount": amount,
+                "sourceWalletId": sourceWalletId,
+                "targetWalletId": targetWalletId
+            }]);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "http://localhost:8080/api/transactions/createTransactions", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var responseObj = JSON.parse(xhr.responseText);
+                    var prettyJson = JSON.stringify(responseObj, null, 2);
+                    document.getElementById("response").textContent = prettyJson;
+                } else {
+                    document.getElementById("response").textContent = 'Transaction failed: ' + xhr.statusText;
+                }
+                loadWallets();
+                loadTransactions();
+                loadEvents();
+            };
+
+            xhr.send(data);
+        }
+
+        function loadWallets() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/wallets/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var wallets = JSON.parse(xhr.responseText);
+                    var table = document.createElement("table");
+                    table.setAttribute("border", "1");
+                    var thead = document.createElement("thead");
+                    var tbody = document.createElement("tbody");
+
+                    // Adding table headers
+                    var headerRow = document.createElement("tr");
+                    ["Wallet ID", "Balance", "Asset", "Account ID"].forEach(headerText => {
+                        var header = document.createElement("th");
+                        header.textContent = headerText;
+                        headerRow.appendChild(header);
+                    });
+                    thead.appendChild(headerRow);
+
+                    // Adding rows for each wallet
+                    wallets.forEach(wallet => {
+                        var row = document.createElement("tr");
+                        ["id", "balance", "asset", "accountId"].forEach(property => {
+                            var cell = document.createElement("td");
+                            cell.textContent = wallet[property];
+                            row.appendChild(cell);
+                        });
+                        tbody.appendChild(row);
+                    });
+
+                    table.appendChild(thead);
+                    table.appendChild(tbody);
+                    document.getElementById("walletsTable").innerHTML = "";
+                    document.getElementById("walletsTable").appendChild(table);
+                } else {
+                    document.getElementById("walletsTable").textContent = "Failed to load wallets";
+                }
+            };
+            xhr.send();
+        }
+
+        function loadTransactions() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/query/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var transactions = JSON.parse(xhr.responseText);
+                    var table = document.createElement("table");
+                    table.setAttribute("border", "1");
+                    var thead = document.createElement("thead");
+                    var tbody = document.createElement("tbody");
+
+                    // Adding table headers
+                    var headerRow = document.createElement("tr");
+                    ["Transaction ID", "Source Wallet ID", "Target Wallet ID", "Source Balance Before", "Source Balance After", "Target Balance Before", "Target Balance After", "Asset", "Amount", "Creation Date", "Transaction Date", "State"].forEach(headerText => {
+                        var header = document.createElement("th");
+                        header.textContent = headerText;
+                        headerRow.appendChild(header);
+                    });
+                    thead.appendChild(headerRow);
+
+                    // Adding rows for each transaction
+                    transactions.forEach(transaction => {
+                        var row = document.createElement("tr");
+                        ["transactionId", "sourceWalletId", "targetWalletId", "sourceBalanceBefore", "sourceBalanceAfter", "targetBalanceBefore", "targetBalanceAfter", "asset", "amount","transactionDate", "creationDate", "state"].forEach(property => {
+                            var cell = document.createElement("td");
+                            // Format date and BigDecimal fields if necessary
+                            if (property.includes("Date")) {
+                                cell.textContent = new Date(transaction[property]).toLocaleString();
+                            } else {
+                                cell.textContent = transaction[property];
+                            }
+                            row.appendChild(cell);
+                        });
+                        tbody.appendChild(row);
+                    });
+
+                    table.appendChild(thead);
+                    table.appendChild(tbody);
+                    document.getElementById("transactionsTable").innerHTML = "";
+                    document.getElementById("transactionsTable").appendChild(table);
+                } else {
+                    document.getElementById("transactionsTable").textContent = "Failed to load transactions";
+                }
+            };
+            xhr.send();
+        }
+
+        function loadEvents() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/event/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var events = JSON.parse(xhr.responseText);
+                    var table = document.createElement("table");
+                    table.setAttribute("border", "1");
+                    var thead = document.createElement("thead");
+                    var tbody = document.createElement("tbody");
+
+                    // Adding table headers
+                    var headerRow = document.createElement("tr");
+                    ["Timestamp", "Aggregate ID", "Event Type", "Payload"].forEach(headerText => {
+                        var header = document.createElement("th");
+                        header.textContent = headerText;
+                        headerRow.appendChild(header);
+                    });
+                    thead.appendChild(headerRow);
+
+                    // Adding rows for each event
+                    events.forEach(event => {
+                        var row = document.createElement("tr");
+                        ["timestamp", "aggregateId", "eventType", "payload"].forEach(property => {
+                            var cell = document.createElement("td");
+                            if (property === "timestamp") {
+                                // Format timestamp
+                                cell.textContent = new Date(event[property]).toLocaleString();
+                            } else {
+                                cell.textContent = event[property];
+                            }
+                            row.appendChild(cell);
+                        });
+                        tbody.appendChild(row);
+                    });
+
+                    table.appendChild(thead);
+                    table.appendChild(tbody);
+
+                    var eventsTable = document.getElementById("eventsTable");
+                    eventsTable.innerHTML = ""; // Clear existing content
+                    eventsTable.appendChild(table);
+                } else {
+                    document.getElementById("eventsTable").textContent = "Failed to load events";
+                }
+            };
+            xhr.send();
+        }
+
+
+        window.onload = function() {
+            loadWallets();
+            loadTransactions();
+            loadEvents();
+        };
+    </script>
+</head>
+<body>
+
+<h2>Create Transaction</h2>
+<form id="transactionForm" onsubmit="submitTransaction()">
+    <label for="amount">Amount:</label><br>
+    <input type="text" id="amount" name="amount"><br>
+    <label for="sourceWalletId">Source Wallet ID:</label><br>
+    <input type="text" id="sourceWalletId" name="sourceWalletId"><br>
+    <label for="targetWalletId">Target Wallet ID:</label><br>
+    <input type="text" id="targetWalletId" name="targetWalletId"><br><br>
+    <input type="submit" value="Submit">
+</form>
+
+<!-- Display the JSON response -->
+<pre id="response"></pre>
+<hr/>
+<!-- Wallets table -->
+<h3>Wallets</h3>
+<div id="walletsTable"></div>
+
+<!-- Transactions table -->
+<h3>Transactions Query</h3>
+<div id="transactionsTable"></div>
+
+<h3>Event Sourcing</h3>
+<div id="eventsTable"></div>
+
+</body>
+</html>

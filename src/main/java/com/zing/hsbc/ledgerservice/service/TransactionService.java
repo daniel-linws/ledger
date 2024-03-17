@@ -46,6 +46,8 @@ public class TransactionService {
     private EventStoreService eventStoreService;
     @Autowired
     AccountService accountService;
+    @Autowired
+    TransactionQueryService transactionQueryService;
 
     @KafkaListener(topics = TOPIC_POSTING_PROCESS)
     public void processTransactions(List<Long> transactionIds) {
@@ -102,6 +104,8 @@ public class TransactionService {
             transaction.setState(TransactionState.FAILED);
             transaction.setTransactionDate(now);
             log.info("Marked transaction ID {} as FAILED.", transaction.getTransactionId());
+            TransactionQuery transactionQuery = Utils.createTransactionQueryFromTransaction(transaction);
+            transactionQueryService.save(transactionQuery);
         });
         transactionRepository.saveAll(transactions);
         notificationSender.sendFailedTransaction(transactions);
@@ -124,11 +128,15 @@ public class TransactionService {
             TransactionCreatedEvent event = new TransactionCreatedEvent(transaction.getTransactionId(), transaction);
             try {
                 eventStoreService.saveEvent(transaction.getTransactionId(), event);
+                TransactionQuery transactionQuery = Utils.createTransactionQueryFromTransaction(transaction);
+                transactionQueryService.save(transactionQuery);
             } catch (JsonProcessingException e) {
                 log.error("Failed to serialize created event for transaction ID {}: ", transaction.getTransactionId(), e);
                 throw new RuntimeException(e);
             }
         });
+
+
         notificationSender.sendProcessTransaction(updatedTransactions);
         return updatedTransactions;
     }

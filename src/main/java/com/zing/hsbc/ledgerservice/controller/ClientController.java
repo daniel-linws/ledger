@@ -17,13 +17,13 @@ public class ClientController {
     private ClientRepository clientRepository;
     @Autowired
     private WalletSubscriptionService subscriptionService;
-    @PostMapping
+    @PostMapping("/update")
     public ResponseEntity<Client> createClient(@RequestBody Client client) {
         Client savedClient = clientRepository.save(client);
         return ResponseEntity.ok(savedClient);
     }
 
-    @GetMapping
+    @GetMapping("/findAll")
     public ResponseEntity<List<Client>> getAllEntities() {
         List<Client> entities = clientRepository.findAll();
         return ResponseEntity.ok(entities);
@@ -38,5 +38,12 @@ public class ClientController {
     public ResponseEntity<Void> unsubscribe(@RequestBody WalletSubscription subscription) {
         subscriptionService.unsubscribe(subscription.getClientId(), subscription.getWalletId());
         return ResponseEntity.ok().build();
+    }
+
+    //for testing purpose
+    @GetMapping("/subscription/findAll")
+    public List<WalletSubscription> getAllSubscription() {
+        List<WalletSubscription> walletSubscriptions = subscriptionService.findAll();
+        return walletSubscriptions;
     }
 }
