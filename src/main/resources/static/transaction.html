@@ -4,37 +4,47 @@
     <meta charset="UTF-8">
     <title>Wallet Transactions</title>
     <script>
-        function submitTransaction() {
+        function submitTransactions() {
             event.preventDefault();
 
-            var amount = document.getElementById("amount").value;
-            var sourceWalletId = document.getElementById("sourceWalletId").value;
-            var targetWalletId = document.getElementById("targetWalletId").value;
+            // Collect input values for each set
+            let transactions = [];
+            for (let i = 1; i <= 3; i++) {
+                let amount = document.getElementById(`amount${i}`).value;
+                let sourceWalletId = document.getElementById(`sourceWalletId${i}`).value;
+                let targetWalletId = document.getElementById(`targetWalletId${i}`).value;
 
-            var data = JSON.stringify([{
-                "amount": amount,
-                "sourceWalletId": sourceWalletId,
-                "targetWalletId": targetWalletId
-            }]);
-
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "http://localhost:8080/api/transactions/createTransactions", true);
-            xhr.setRequestHeader("Content-Type", "application/json");
-
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 300) {
-                    var responseObj = JSON.parse(xhr.responseText);
-                    var prettyJson = JSON.stringify(responseObj, null, 2);
-                    document.getElementById("response").textContent = prettyJson;
-                } else {
-                    document.getElementById("response").textContent = 'Transaction failed: ' + xhr.statusText;
+                // If the amount is not empty, add the set to the transactions array
+                if (amount) {
+                    transactions.push({
+                        amount: amount,
+                        sourceWalletId: sourceWalletId,
+                        targetWalletId: targetWalletId
+                    });
                 }
-                loadWallets();
-                loadTransactions();
-                loadEvents();
-            };
+            }
 
-            xhr.send(data);
+            // Proceed only if there's at least one non-empty transaction
+            if (transactions.length > 0) {
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "http://localhost:8080/api/transactions/createTransactions", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.onload = function () {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        // Display the response below the form
+                        loadWallets();
+                        loadTransactions();
+                        loadEvents();
+                        document.getElementById("response").textContent = xhr.responseText;
+                    } else {
+                        // Handle errors
+                        document.getElementById("response").textContent = "Failed to create transactions";
+                    }
+                };
+                xhr.send(JSON.stringify(transactions));
+            } else {
+                alert("Please enter at least one amount.");
+            }
         }
 
         function loadWallets() {
@@ -186,15 +196,38 @@
 <body>
 
 <h2>Create Transaction</h2>
-<form id="transactionForm" onsubmit="submitTransaction()">
-    <label for="amount">Amount:</label><br>
-    <input type="text" id="amount" name="amount"><br>
-    <label for="sourceWalletId">Source Wallet ID:</label><br>
-    <input type="text" id="sourceWalletId" name="sourceWalletId"><br>
-    <label for="targetWalletId">Target Wallet ID:</label><br>
-    <input type="text" id="targetWalletId" name="targetWalletId"><br><br>
-    <input type="submit" value="Submit">
+<form id="transactionForm" onsubmit="submitTransactions()">
+    <!-- Set 1 -->
+    <div>
+        <label for="amount1">Amount 1:</label>
+        <input type="text" id="amount1" name="amount1">
+        <label for="sourceWalletId1">Source Wallet ID 1:</label>
+        <input type="text" id="sourceWalletId1" name="sourceWalletId1">
+        <label for="targetWalletId1">Target Wallet ID 1:</label>
+        <input type="text" id="targetWalletId1" name="targetWalletId1">
+    </div>
+    <!-- Set 2 -->
+    <div>
+        <label for="amount2">Amount 2:</label>
+        <input type="text" id="amount2" name="amount2">
+        <label for="sourceWalletId2">Source Wallet ID 2:</label>
+        <input type="text" id="sourceWalletId2" name="sourceWalletId2">
+        <label for="targetWalletId2">Target Wallet ID 2:</label>
+        <input type="text" id="targetWalletId2" name="targetWalletId2">
+    </div>
+    <!-- Set 3 -->
+    <div>
+        <label for="amount3">Amount 3:</label>
+        <input type="text" id="amount3" name="amount3">
+        <label for="sourceWalletId3">Source Wallet ID 3:</label>
+        <input type="text" id="sourceWalletId3" name="sourceWalletId3">
+        <label for="targetWalletId3">Target Wallet ID 3:</label>
+        <input type="text" id="targetWalletId3" name="targetWalletId3">
+    </div>
+    <br>
+    <button type="submit">Create Transactions</button>
 </form>
+
 
 <!-- Display the JSON response -->
 <pre id="response"></pre>
