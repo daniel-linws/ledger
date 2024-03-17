@@ -20,6 +20,11 @@ spring:
       group-id: zing_consumer
     producer:
       bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      properties:
+        acks: all
+        enable.idempotence: true
 
 logging:
   file:
