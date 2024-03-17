@@ -8,6 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * Manages user subscriptions to wallet events, such as balance changes.
+ * This service provides functionality for users to subscribe to or unsubscribe from specific wallet events,
+ * allowing them to receive updates on changes relevant to their interests.
+ */
+
 @Service
 public class WalletSubscriptionService {
 

@@ -23,6 +23,8 @@ public class TransactionQueryService {
     @Autowired
     private TransactionQueryRepository transactionQueryRepository;
 
+    // Implements the CQRS pattern by aggregating wallet and transaction details, consolidating this information into a single record.
+    // This record is then saved to the TransactionQuery table, facilitating streamlined query operations and enhanced data retrieval efficiency.
     @Transactional
     @KafkaListener(topics = TOPIC_TRANSACTION_QUERY_CHANGED)
     public void updateTransactionQuery(String json) throws JsonProcessingException {

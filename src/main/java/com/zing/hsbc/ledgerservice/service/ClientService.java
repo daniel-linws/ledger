@@ -25,6 +25,11 @@ public class ClientService {
     private WalletSubscriptionService walletSubscriptionService;
     @Autowired
     private ClientRepository clientRepository;
+
+    /*
+     * Responds to balance change events by identifying clients subscribed to wallet balance notifications.
+     * Executes relevant actions such as sending push notifications or emails, adhering to user preferences.
+     */
     @KafkaListener(topics = TOPIC_BALANCE_CHANGED)
     public void balanceChangeListener(List<Long> transactionIds) {
         List<TransactionQuery> transactions = transactionQueryService.findAllById(transactionIds);

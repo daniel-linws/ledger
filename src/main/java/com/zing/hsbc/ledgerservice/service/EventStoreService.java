@@ -15,6 +15,8 @@ import java.util.List;
 public class EventStoreService {
     @Autowired
     private EventRepository eventRepository;
+    // Constructs an EventEntity object to encapsulate event data, enabling event sourcing.
+    // This method ensures events are systematically recorded for future replay and state reconstruction.
     public void saveEvent(Long aggregateId, BaseEvent event) throws JsonProcessingException {
         EventEntity eventEntity = new EventEntity();
         eventEntity.setAggregateId(aggregateId.toString());

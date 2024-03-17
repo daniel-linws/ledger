@@ -49,6 +49,8 @@ public class TransactionService {
     @Autowired
     TransactionQueryService transactionQueryService;
 
+    // Handles incoming Kafka messages containing transaction IDs for processing.
+    // Initiates the transaction processing workflow for each received ID.
     @KafkaListener(topics = TOPIC_POSTING_PROCESS)
     public void processTransactions(List<Long> transactionIds) {
         log.info("Starting to process transactions with IDs: {}", transactionIds);
@@ -61,6 +63,8 @@ public class TransactionService {
         }
     }
 
+    // Processes a list of transactions by executing financial operations between source and target wallets.
+    // Ensures sufficient funds, updates wallet balances, and records transactions as either CLEAR or FAILED.
     @Transactional
     public void doProcessTransactions(List<Transaction> transactions) throws JsonProcessingException {
         log.info("Processing {} transactions.", transactions.size());
@@ -96,6 +100,8 @@ public class TransactionService {
         log.info("Completed processing transactions.");
     }
 
+    // Handles exceptions encountered during transaction processing.
+    // Marks affected transactions as FAILED, updates their status, and notifies the necessary parties.
     @Transactional
     public void handleErrorOccur(List<Transaction> transactions) {
         log.warn("Handling error for {} transactions.", transactions.size());
@@ -120,6 +126,8 @@ public class TransactionService {
         });
     }
 
+    // Creates and persists new transactions based on input, generating necessary events for each.
+    // Utilizes Event Sourcing to record the creation of transactions and their initial state.
     @Transactional
     public List<Transaction> createTransactions(List<Transaction> transactions) {
         log.info("Creating {} transactions.", transactions.size());
@@ -131,7 +139,7 @@ public class TransactionService {
                 TransactionQuery transactionQuery = Utils.createTransactionQueryFromTransaction(transaction);
                 transactionQueryService.save(transactionQuery);
             } catch (JsonProcessingException e) {
-                log.error("Failed to serialize created event for transaction ID {}: ", transaction.getTransactionId(), e);
+                log.error("Failed to serialize created event for transaction", e);
                 throw new RuntimeException(e);
             }
         });
@@ -141,6 +149,8 @@ public class TransactionService {
         return updatedTransactions;
     }
 
+    // Updates a transaction if it's in a PENDING state with new details from the provided DTO.
+    // Throws exceptions if the transaction is not found or not in a PENDING state.
     @Transactional
     public Transaction updateTransactionIfPending(Long transactionID, TransactionUpdateDto dto) {
         log.info("Updating transaction with ID: {}", transactionID);
@@ -158,7 +168,9 @@ public class TransactionService {
         }
     }
 
-    public void validateAccounts(Transaction transaction) {
+    // Validates a transaction's eligibility based on wallet existence, account validity, and other business rules.
+    // Ensures transactions comply with predefined constraints (e.g., active accounts, matching asset types).
+    public void validateTransaction(Transaction transaction) {
         Wallet targetWallet = walletService.getWallet(transaction.getTargetWalletId())
                 .orElseThrow(() -> new ResourceNotFoundException("Wallet not found for id :: " + transaction.getTargetWalletId()));
         Wallet sourceWallet = walletService.getWallet(transaction.getSourceWalletId())
@@ -169,17 +181,17 @@ public class TransactionService {
         Account sourceAccount = accountService.getAccountById(sourceWallet.getAccountId())
                 .orElseThrow(() -> new ResourceNotFoundException("Account not found for id :: " + sourceWallet.getAccountId()));
 
-        if(sourceWallet.getId().equals(targetWallet.getId())){
-            throw new OperationForbiddenException("source wallet is same as target wallet id ::"+sourceWallet.getId());
+        if (sourceWallet.getId().equals(targetWallet.getId())) {
+            throw new OperationForbiddenException("source wallet is same as target wallet id ::" + sourceWallet.getId());
         }
 
         // Check if both accounts are active
         if (!AccountState.ACTIVE.equals(targetAccount.getState())) {
-            throw new OperationForbiddenException("account is not in ACTIVE state id ::"+targetAccount.getId());
+            throw new OperationForbiddenException("account is not in ACTIVE state id ::" + targetAccount.getId());
         }
 
         if (!AccountState.ACTIVE.equals(sourceAccount.getState())) {
-            throw new OperationForbiddenException("account is not in ACTIVE state id ::"+sourceAccount.getId());
+            throw new OperationForbiddenException("account is not in ACTIVE state id ::" + sourceAccount.getId());
         }
 
         // Check if the asset types of both wallets are the same

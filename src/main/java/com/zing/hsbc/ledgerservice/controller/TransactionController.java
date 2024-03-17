@@ -26,7 +26,7 @@ public class TransactionController {
         log.info("createTransactions called");
         LocalDateTime now = LocalDateTime.now();
         transactions.forEach(transaction -> {
-            transactionService.validateAccounts(transaction);
+            transactionService.validateTransaction(transaction);
             transaction.setState(TransactionState.PENDING);
             transaction.setCreationDate(now);
             log.info("Transaction set to PENDING with ID: {}", transaction.getTransactionId());
