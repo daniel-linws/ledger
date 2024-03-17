@@ -103,17 +103,17 @@
 <h2>Client Management</h2>
 <div class="container">
     <div class="form-container">
-        <h3>Update Client</h3>
+        <h3>Add/Update Client</h3>
         <form onsubmit="handleClientUpdate()">
             <label for="update-id">Client ID:</label><br>
             <input type="text" id="update-id" name="id"><br>
             <label for="update-name">Client Name:</label><br>
             <input type="text" id="update-name" name="name"><br><br>
-            <button type="submit">Update</button>
+            <button type="submit">Confirm</button>
         </form>
     </div>
     <div class="form-container">
-        <h3>Manage Subscription</h3>
+        <h3>Wallet Balance Change Event</h3>
         <form>
             <label for="subscription-clientId">Client ID:</label><br>
             <input type="text" id="subscription-clientId" name="clientId"><br>
@@ -124,7 +124,7 @@
         </form>
     </div>
 </div>
-
+<hr/>
 <div class="response">
     <h3>Response</h3>
     <pre id="responseBody"></pre>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wallet Balance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input, button {
+            margin-top: 5px;
+            display: block;
+        }
+
+        #responseBody {
+            margin-top: 20px;
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Wallet Balance</h2>
+
+<form id="walletBalanceForm">
+    <label for="walletId">Wallet ID:</label>
+    <input type="text" id="walletId" name="walletId" required>
+
+    <label for="timestamp">Timestamp:</label>
+    <input type="datetime-local" id="timestamp" name="timestamp" required>
+
+    <button type="submit">Search</button>
+</form>
+
+<div id="responseBody">Balance will appear here...</div>
+<hr/>
+<h3>Wallets</h3>
+<div id="walletsTable"></div>
+
+<script>
+    document.getElementById("walletBalanceForm").onsubmit = async function(e) {
+        e.preventDefault();
+
+        // Retrieve form data
+        const walletId = document.getElementById("walletId").value;
+        const timestamp = document.getElementById("timestamp").value;
+
+        // Prepare data for API request
+        const data = { walletId, timestamp };
+
+        try {
+            // Perform the API request
+            const response = await fetch("http://localhost:8080/api/query/balance", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            const responseBody = await response.json();
+
+            // Display the response
+            document.getElementById("responseBody").textContent = JSON.stringify(responseBody, null, 2);
+        } catch (error) {
+            document.getElementById("responseBody").textContent = error.toString();
+        }
+    };
+
+    function loadWallets() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://localhost:8080/api/wallets/findAll", true);
+        xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                var wallets = JSON.parse(xhr.responseText);
+                var table = document.createElement("table");
+                table.setAttribute("border", "1");
+                var thead = document.createElement("thead");
+                var tbody = document.createElement("tbody");
+
+                // Adding table headers
+                var headerRow = document.createElement("tr");
+                ["Wallet ID", "Balance", "Asset", "Account ID"].forEach(headerText => {
+                    var header = document.createElement("th");
+                    header.textContent = headerText;
+                    headerRow.appendChild(header);
+                });
+                thead.appendChild(headerRow);
+
+                // Adding rows for each wallet
+                wallets.forEach(wallet => {
+                    var row = document.createElement("tr");
+                    ["id", "balance", "asset", "accountId"].forEach(property => {
+                        var cell = document.createElement("td");
+                        cell.textContent = wallet[property];
+                        row.appendChild(cell);
+                    });
+                    tbody.appendChild(row);
+                });
+
+                table.appendChild(thead);
+                table.appendChild(tbody);
+                document.getElementById("walletsTable").innerHTML = "";
+                document.getElementById("walletsTable").appendChild(table);
+            } else {
+                document.getElementById("walletsTable").textContent = "Failed to load wallets";
+            }
+        };
+        xhr.send();
+    }
+
+    window.onload = function() {
+        loadWallets();
+    };
+</script>
+
+
+
+</body>
+</html>

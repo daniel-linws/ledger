@@ -3,13 +3,10 @@ package com.zing.hsbc.ledgerservice.notification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zing.hsbc.ledgerservice.entity.Transaction;
 import com.zing.hsbc.ledgerservice.entity.TransactionQuery;
-import com.zing.hsbc.ledgerservice.eventSource.TransactionClearEvent;
-import com.zing.hsbc.ledgerservice.eventSource.TransactionFailedEvent;
 import com.zing.hsbc.ledgerservice.helper.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +14,7 @@ import java.util.stream.Collectors;
 import static com.zing.hsbc.ledgerservice.notification.KafkaTopic.*;
 
 @Service
-public class NotificationSender {
+public class NotificationProducer {
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;

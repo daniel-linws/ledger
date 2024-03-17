@@ -13,7 +13,7 @@ import com.zing.hsbc.ledgerservice.exception.InsufficientFundException;
 import com.zing.hsbc.ledgerservice.exception.OperationForbiddenException;
 import com.zing.hsbc.ledgerservice.exception.ResourceNotFoundException;
 import com.zing.hsbc.ledgerservice.helper.Utils;
-import com.zing.hsbc.ledgerservice.notification.NotificationSender;
+import com.zing.hsbc.ledgerservice.notification.NotificationProducer;
 import com.zing.hsbc.ledgerservice.repo.TransactionRepository;
 import com.zing.hsbc.ledgerservice.state.AccountState;
 import com.zing.hsbc.ledgerservice.state.TransactionState;
@@ -39,7 +39,7 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
     @Autowired
-    private NotificationSender notificationSender;
+    private NotificationProducer notificationProducer;
     @Autowired
     private WalletService walletService;
     @Autowired
@@ -95,8 +95,8 @@ public class TransactionService {
         }
 
         transactionRepository.saveAll(transactions);
-        notificationSender.sendClearTransaction(transactionQueries);
-        notificationSender.sendBalanceChangedMsg(transactions);
+        notificationProducer.sendClearTransaction(transactionQueries);
+        notificationProducer.sendBalanceChangedMsg(transactions);
         log.info("Completed processing transactions.");
     }
 
@@ -114,7 +114,7 @@ public class TransactionService {
             transactionQueryService.save(transactionQuery);
         });
         transactionRepository.saveAll(transactions);
-        notificationSender.sendFailedTransaction(transactions);
+        notificationProducer.sendFailedTransaction(transactions);
         transactions.forEach(transaction -> {
             try {
                 TransactionFailedEvent event = new TransactionFailedEvent(transaction.getTransactionId(), transaction);
@@ -145,7 +145,7 @@ public class TransactionService {
         });
 
 
-        notificationSender.sendProcessTransaction(updatedTransactions);
+        notificationProducer.sendProcessTransaction(updatedTransactions);
         return updatedTransactions;
     }
 
