@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static com.zing.hsbc.ledgerservice.notification.KafkaTopic.*;
+import static com.zing.hsbc.ledgerservice.kafka.KafkaTopic.*;
 
 @Service
 public class ClientService {

@@ -1,4 +1,4 @@
-package com.zing.hsbc.ledgerservice.notification;
+package com.zing.hsbc.ledgerservice.kafka;
 
 public class KafkaTopic {
     public final static String TOPIC_POSTING_PROCESS="posting_process";

@@ -1,4 +1,4 @@
-package com.zing.hsbc.ledgerservice.notification;
+package com.zing.hsbc.ledgerservice.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.zing.hsbc.ledgerservice.entity.Transaction;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.zing.hsbc.ledgerservice.notification.KafkaTopic.*;
+import static com.zing.hsbc.ledgerservice.kafka.KafkaTopic.*;
 
 @Service
 public class NotificationProducer {

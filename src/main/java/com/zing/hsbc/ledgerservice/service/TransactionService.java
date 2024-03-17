@@ -13,7 +13,7 @@ import com.zing.hsbc.ledgerservice.exception.InsufficientFundException;
 import com.zing.hsbc.ledgerservice.exception.OperationForbiddenException;
 import com.zing.hsbc.ledgerservice.exception.ResourceNotFoundException;
 import com.zing.hsbc.ledgerservice.helper.Utils;
-import com.zing.hsbc.ledgerservice.notification.NotificationProducer;
+import com.zing.hsbc.ledgerservice.kafka.NotificationProducer;
 import com.zing.hsbc.ledgerservice.repo.TransactionRepository;
 import com.zing.hsbc.ledgerservice.state.AccountState;
 import com.zing.hsbc.ledgerservice.state.TransactionState;
@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.zing.hsbc.ledgerservice.notification.KafkaTopic.TOPIC_POSTING_PROCESS;
+import static com.zing.hsbc.ledgerservice.kafka.KafkaTopic.TOPIC_POSTING_PROCESS;
 
 @Service
 public class TransactionService {

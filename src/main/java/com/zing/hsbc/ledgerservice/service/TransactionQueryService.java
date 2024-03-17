@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import static com.zing.hsbc.ledgerservice.notification.KafkaTopic.TOPIC_TRANSACTION_QUERY_CHANGED;
+import static com.zing.hsbc.ledgerservice.kafka.KafkaTopic.TOPIC_TRANSACTION_QUERY_CHANGED;
 
 @Service
 public class TransactionQueryService {
