@@ -22,14 +22,36 @@
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onload = function () {
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    var responseText = JSON.stringify(JSON.parse(xhr.responseText), null, 2); // Prettify JSON response
-                    document.getElementById("responseBody").textContent = responseText; // Display response
                     loadWallets(); // Refresh wallets table
+                    loadAccounts();
+                    if(xhr.responseText) {
+                        var responseText = JSON.stringify(JSON.parse(xhr.responseText), null, 2); // Prettify JSON response
+                        document.getElementById("responseBody").textContent = responseText; // Display response
+                    }
                 } else {
                     document.getElementById("responseBody").textContent = "Failed to create wallet: " + xhr.statusText;
                 }
             };
             xhr.send(data);
+        }
+
+        function loadAccounts() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", "http://localhost:8080/api/accounts/findAll", true);
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    var accounts = JSON.parse(xhr.responseText);
+                    var table = "<table border='1'><thead><tr><th>Account ID</th><th>Client ID</th><th>Account Name</th><th>Account State</th></tr></thead><tbody>";
+                    accounts.forEach(account => {
+                        table += `<tr><td>${account.id}</td><td>${account.clientId}</td><td>${account.name}</td><td>${account.state}</td></tr>`;
+                    });
+                    table += "</tbody></table>";
+                    document.getElementById("accountsTable").innerHTML = table;
+                } else {
+                    document.getElementById("accountsTable").textContent = "Failed to load accounts";
+                }
+            };
+            xhr.send();
         }
 
         function loadWallets() {
@@ -74,6 +96,7 @@
 
         window.onload = function() {
             loadWallets();
+            loadAccounts();
         };
     </script>
 </head>
@@ -99,6 +122,8 @@
 <hr/>
 <h3>Wallets</h3>
 <div id="walletsTable"></div>
+<h3>Accounts</h3>
+<div id="accountsTable"></div>
 
 </body>
 </html>
